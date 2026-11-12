@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comparador Pastron Matsuda</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="band">
+  <div class="wrap band-in">
+    <div class="brand">
+      <img class="logo" id="logoPastron" src="assets/pastron-negativa.png" alt="Pastron Agro" width="200">
+      <span class="wordmark" id="wordmark" hidden>Pastron Agro</span>
+    </div>
+    <div class="band-title">
+      <h1>Comparador de suplementos</h1>
+      <p>Nutrição animal Matsuda: preço, custo e fórmula lado a lado.</p>
+    </div>
+    <p class="chip-ref" title="Base de preços em uso"><span>Base de preços</span> Tabela 04/26 · 04/08/2026</p>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <aside class="cenario" aria-label="Cenário da negociação">
+    <details id="cenarioBox" open>
+      <summary>
+        <span class="sum-title">Cenário da negociação</span>
+        <span class="sum-resumo" id="cenarioResumo"></span>
+      </summary>
+      <form id="cenarioForm" class="campos" autocomplete="off">
+        <fieldset>
+          <legend>Condição comercial</legend>
+          <label for="fPrazo">Prazo
+            <select id="fPrazo" data-k="prazo">
+              <option value="0">À vista</option><option value="1">30 dias</option>
+              <option value="2">30/60 dias</option><option value="3">30/60/90 dias</option>
+            </select>
+          </label>
+          <label for="fDesc">Desconto
+            <select id="fDesc" data-k="desc"></select>
+          </label>
+          <p class="comissao" id="comissao"></p>
+          <label for="fFrete">Frete <small>R$ por saco</small>
+            <input id="fFrete" data-k="frete" type="number" min="0" step="any" inputmode="decimal">
+          </label>
+          <p class="nota">Prazo, desconto e frete valem só para produtos Matsuda.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Rebanho</legend>
+          <div class="duo">
+            <label for="fPeso">Peso do animal <small>kg</small>
+              <input id="fPeso" data-k="peso" type="number" min="0" step="any" inputmode="decimal">
+            </label>
+            <label for="fLeite">Leite <small>L/cab/dia</small>
+              <input id="fLeite" data-k="leite" type="number" min="0" step="any" inputmode="decimal">
+            </label>
+            <label for="fCab">Cabeças no lote
+              <input id="fCab" data-k="cab" type="number" min="0" step="1" inputmode="numeric">
+            </label>
+            <label for="fDias">Período <small>dias</small>
+              <input id="fDias" data-k="dias" type="number" min="0" step="1" inputmode="numeric">
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Custo por arroba <small>opcional</small></legend>
+          <div class="duo">
+            <label for="fGmd">Ganho de peso <small>g/cab/dia</small>
+              <input id="fGmd" data-k="gmd" type="number" min="0" step="any" inputmode="decimal" placeholder="—">
+            </label>
+            <label for="fRend">Rendimento de carcaça <small>%</small>
+              <input id="fRend" data-k="rend" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="—">
+            </label>
+          </div>
+        </fieldset>
+        <fieldset id="salBox" hidden>
+          <legend>Sal branco para mistura</legend>
+          <label for="fSal">Preço do sal <small>R$ por saco de 25 kg</small>
+            <input id="fSal" data-k="sal" type="number" min="0" step="any" inputmode="decimal" placeholder="Informe">
+          </label>
+        </fieldset>
+        <button type="button" class="btn-ghost" id="btnReset">Voltar ao cenário padrão</button>
+      </form>
+    </details>
+  </aside>
+
+  <main>
+    <section class="bloco" aria-labelledby="hProd">
+      <div class="bloco-top">
+        <h2 id="hProd">Produtos em comparação</h2>
+        <div class="acoes">
+          <button type="button" class="btn" id="btnAdd">Adicionar produto</button>
+          <button type="button" class="btn-ghost" id="btnConc">Cadastrar concorrente</button>
+          <button type="button" class="btn-ghost" id="btnResumo">Resumo para o cliente</button>
+        </div>
+      </div>
+
+      <div class="destaques" id="destaques"></div>
+
+      <div class="lentes" role="tablist" aria-label="Lente da tabela">
+        <button type="button" role="tab" data-lens="custo" id="tabCusto">Preço e custo</button>
+        <button type="button" role="tab" data-lens="formula" id="tabFormula">Fórmula por kg</button>
+        <button type="button" role="tab" data-lens="ingestao" id="tabIngestao">Ingestão diária</button>
+      </div>
+
+      <div class="tabela-scroll" id="tabelaScroll" tabindex="0" aria-label="Tabela de comparação"></div>
+      <p class="legenda"><span class="tag-best">melhor</span> melhor valor da linha · toque no nome de uma linha para ver o gráfico · traço = dado não consta no informativo</p>
+    </section>
+
+    <section class="bloco" aria-labelledby="hGraf">
+      <h2 id="hGraf">Gráfico</h2>
+      <div id="grafico"></div>
+    </section>
+
+    <section class="bloco pend" aria-labelledby="hPend">
+      <h2 id="hPend">Pendências nos informativos</h2>
+      <ul id="pendencias"></ul>
+    </section>
+  </main>
+</div>
+
+<footer class="band rodape">
+  <div class="wrap rodape-in">
+    <div>
+      <p class="assinatura"><em>Conhecimento que fortalece o <span>campo</span>.</em></p>
+      <p>Produtos fabricados e faturados pela Matsuda Sementes e Nutrição Animal. A Pastron Agro é a representante comercial.</p>
+      <p>Ferramenta de uso interno do representante. Os preços seguem a tabela de fábrica e dependem de aprovação de crédito da Matsuda. Níveis de garantia conferidos nos informativos dos produtos e nos livretos Nutrição Animal 2026 e Leite 2025. Nada é estimado.</p>
+    </div>
+    <div class="matsuda" id="matsudaBox" hidden><img id="logoMatsuda" src="assets/matsuda.png" alt="Matsuda Sementes e Nutrição Animal" width="150"></div>
+  </div>
+</footer>
+
+<dialog id="dlgAdd" aria-labelledby="hAdd">
+  <div class="dlg-head">
+    <h2 id="hAdd">Adicionar produto</h2>
+    <button type="button" class="x" data-close aria-label="Fechar">×</button>
+  </div>
+  <input id="busca" type="search" placeholder="Buscar por nome, linha ou código" aria-label="Buscar produto">
+  <div class="chips" id="chipsLinha"></div>
+  <ul class="lista" id="listaProdutos"></ul>
+  <div class="dlg-foot"><span id="contSel"></span><button type="button" class="btn" data-close>Concluir</button></div>
+</dialog>
+
+<dialog id="dlgConc" aria-labelledby="hConc">
+  <form id="formConc" autocomplete="off">
+    <div class="dlg-head">
+      <h2 id="hConc">Cadastrar concorrente</h2>
+      <button type="button" class="x" data-close aria-label="Fechar">×</button>
+    </div>
+    <p class="nota">Copie os níveis de garantia do rótulo. Deixe em branco o que não constar. O preço entra como informado, sem prazo, desconto ou frete.</p>
+    <div class="duo">
+      <label for="cNome">Produto <input id="cNome" required maxlength="60"></label>
+      <label for="cMarca">Marca <input id="cMarca" required maxlength="40"></label>
+      <label for="cPreco">Preço <small>R$ por saco</small><input id="cPreco" type="number" min="0" step="any" inputmode="decimal" required></label>
+      <label for="cSaco">Peso do saco <small>kg</small><input id="cSaco" type="number" min="0" step="any" inputmode="decimal" required></label>
+      <label for="cCons">Consumo <small>g/cab/dia</small><input id="cCons" type="number" min="0" step="any" inputmode="decimal"></label>
+    </div>
+    <h3>Níveis de garantia por kg</h3>
+    <div class="trio" id="concNiveis"></div>
+    <div class="dlg-foot"><span></span><button type="submit" class="btn">Salvar e comparar</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgResumo" aria-labelledby="hRes">
+  <div class="dlg-head">
+    <h2 id="hRes">Resumo para o cliente</h2>
+    <button type="button" class="x" data-close aria-label="Fechar">×</button>
+  </div>
+  <p class="nota">Só produtos Matsuda, com preço final. Não mostra desconto, comissão nem concorrentes.</p>
+  <div class="seg-row">
+    <div class="seg" id="segFormato" role="group" aria-label="Formato">
+      <button type="button" data-v="curto">Curto (WhatsApp)</button><button type="button" data-v="completo">Completo, com a conta</button>
+    </div>
+    <div class="seg" id="segTom" role="group" aria-label="Tom">
+      <button type="button" data-v="produtor">Produtor</button><button type="button" data-v="tecnico">Técnico</button>
+    </div>
+  </div>
+  <textarea id="resumoTxt" readonly rows="14" aria-label="Texto do resumo"></textarea>
+  <div class="dlg-foot"><span id="copiado" role="status"></span><button type="button" class="btn" id="btnCopiar">Copiar texto</button></div>
+</dialog>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
